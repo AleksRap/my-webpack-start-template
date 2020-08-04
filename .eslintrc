@@ -1,0 +1,18 @@
+{
+  "parser": "babel-eslint",
+  "env": {
+    "es6": true,
+    "browser": true,
+    "node": true
+  },
+  "rules": {
+    "operator-linebreak": ["error", "before"],
+    "no-trailing-spaces": ["error", { "skipBlankLines": true }],
+    "multiline-ternary": "off",
+    "comma-dangle": "off",
+    "require-jsdoc": "off",
+    "no-multi-spaces": "off",
+    "max-len": "off"
+  },
+  "extends": ["eslint:recommended", "google"]
+}
