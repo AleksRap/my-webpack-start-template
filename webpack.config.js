@@ -6,6 +6,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const TerserWebpackPlugin = require('terser-webpack-plugin');
 const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
+const ImageminPlugin = require('imagemin-webpack');
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = !isDev;
@@ -97,6 +98,34 @@ const plugins = () => {
   return base;
 };
 
+const fileLoaders = () => {
+  const loaders = ['file-loader'];
+  isProd && loaders.push({
+    loader: ImageminPlugin.loader,
+    options: {
+      bail: false,
+      cache: false,
+      imageminOptions: {
+        plugins: [
+          ['pngquant', {quality: [0.5, 0.5]}],
+          ['mozjpeg', {quality: 75, progressive: true}],
+          ['gifsicle', {interlaced: true}],
+          [
+            'svgo',
+            {
+              plugins: [{
+                removeViewBox: false
+              }]
+            }
+          ],
+        ]
+      }
+    }
+  });
+
+  return loaders;
+}
+
 module.exports = {
   context: path.resolve(__dirname, 'src'),                          // Контекст для всех урлов в настройках
   mode: 'development',                                              // Режим сборки 'development' и 'production'
@@ -134,7 +163,7 @@ module.exports = {
       },
       {
         test: /\.(png|jpg|svg|gif)$/,
-        use: ['file-loader']
+        use: fileLoaders()
       },
       {
         test: /\.(ttf|woff|woff2|eot)$/,
