@@ -1,18 +1,33 @@
 {
-  "parser": "babel-eslint",
+  "parser": "@babel/eslint-parser",
+  "plugins": ["@babel"],
   "env": {
     "es6": true,
     "browser": true,
     "node": true
   },
+  "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "impliedStrict": true,
+      "allowImportExportEverywhere": true
+    }
+  },
+  "extends": ["eslint:recommended", "google"],
   "rules": {
-    "operator-linebreak": ["error", "before"],
-    "no-trailing-spaces": ["error", { "skipBlankLines": true }],
-    "multiline-ternary": "off",
-    "comma-dangle": "off",
+    "new-cap": "off",
+    "no-invalid-this": "off",
+    "no-unused-expressions": "off",
+    "object-curly-spacing": "off",
+    "semi": "off",
+    "@babel/new-cap": "error",
+    "@babel/no-invalid-this": "error",
+    "@babel/object-curly-spacing": "error",
+    "@babel/semi": "error",
     "require-jsdoc": "off",
     "no-multi-spaces": "off",
-    "max-len": "off"
-  },
-  "extends": ["eslint:recommended", "google"]
+    "max-len": "off",
+    "operator-linebreak": ["error", "before"]
+  }
 }

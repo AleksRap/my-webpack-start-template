@@ -14,14 +14,14 @@ const isProd = !isDev;
 const optimization = () => {
   const config = {
     splitChunks: {
-      chunks: 'all'                                                 // Нужна при нескольких точках входа. Позволяет не грузить общий код в каждый бандл, а выносить его в отдельные файлы
-    }
+      chunks: 'all',                                                // Нужна при нескольких точках входа. Позволяет не грузить общий код в каждый бандл, а выносить его в отдельные файлы
+    },
   };
 
   if (isProd) {
     config.minimizer = [                                            // В режиме прода минифицируем css
       new OptimizeCssAssetsPlugin(),
-      new TerserWebpackPlugin()
+      new TerserWebpackPlugin(),
     ];
   }
 
@@ -34,10 +34,10 @@ const cssLoaders = (extra) => {
       loader: MiniCssExtractPlugin.loader,
       options: {
         hrm: isDev,
-        reloadAll: true
-      }
+        reloadAll: true,
+      },
     },
-    'css-loader'
+    'css-loader',
   ];
 
   extra && loaders.push(extra);
@@ -45,26 +45,14 @@ const cssLoaders = (extra) => {
   return loaders;
 };
 
-const jsLoader = (preset) => {
+const jsLoader = () => {
   const loader = [{
     loader: 'babel-loader',
-    options: babelOptions(preset)
   }];
 
-  isDev && !preset && loader.push('eslint-loader');                 // Для того чтоб линтер не применялся в продакшене и на файлах отличных от .js
+  isDev && loader.push('eslint-loader');                            // Для того чтоб линтер не применялся в продакшене и на файлах отличных от .js
 
   return loader;
-};
-
-const babelOptions = (preset) => {
-  const opts = {
-    presets: ['@babel/preset-env'],
-    plugins: ['@babel/plugin-proposal-class-properties']
-  };
-
-  preset && opts.presets.push(preset);
-
-  return opts;
 };
 
 const filename = (ext) => isDev
@@ -76,21 +64,21 @@ const plugins = () => {
     new HTMLWebpackPlugin({                                 // Для создания index.html в папке прода с указанием путей до подключенных скриптов
       template: './index.html',                                     // Указывает какой файл применять как шаблон
       minify: {
-        collapseWhitespace: isProd                                  // Минификация html, только в режиме продакшена
-      }
+        collapseWhitespace: isProd,                                 // Минификация html, только в режиме продакшена
+      },
     }),
     new CleanWebpackPlugin(),                                       // Чистит папку прода при пересборке
     new CopyWebpackPlugin({                                 // Для переноса файлов в папку прода. Для каждого файла/папки создается свой объект
       patterns: [
         {
           from: path.resolve(__dirname, 'src/assets/favicon.ico'),
-          to: path.resolve(__dirname, 'public')
-        }
-      ]
+          to: path.resolve(__dirname, 'public'),
+        },
+      ],
     }),
     new MiniCssExtractPlugin({                              // Вынос стилей в отдельный файл
-      filename: filename('css')                                 // Имя этого файла
-    })
+      filename: filename('css'),                                // Имя этого файла
+    }),
   ];
 
   isProd && base.push(new BundleAnalyzerPlugin());
@@ -114,40 +102,43 @@ const fileLoaders = () => {
             'svgo',
             {
               plugins: [{
-                removeViewBox: false
-              }]
-            }
+                removeViewBox: false,
+              }],
+            },
           ],
-        ]
-      }
-    }
+        ],
+      },
+    },
   });
 
   return loaders;
-}
+};
 
 module.exports = {
   context: path.resolve(__dirname, 'src'),                          // Контекст для всех урлов в настройках
   mode: 'development',                                              // Режим сборки 'development' и 'production'
   entry: {                                                          // Точки входа
     main: ['@babel/polyfill', './index.js'],
-    analytics: './analytic.ts'
+    analytics: './analytic.ts',
   },
   output: {                                                         // Выгрузка бандла
     filename: filename('js'),                                   // Имена файлов
-    path: path.resolve(__dirname, 'public')                         // Путь до папки выгрузки
+    path: path.resolve(__dirname, 'public'),                        // Путь до папки выгрузки
   },
   resolve: {
     extensions: ['.js', '.ts', '.json'],                            // Расширения, которые можно не указывать в импортах
     alias: {                                                        // Алиасы, для упрощенного доступа к указанным путям. Вместо ../../../.. и т.д
       '@': path.resolve(__dirname, 'src'),
-      '@modules': path.resolve(__dirname, 'src/modules')
-    }
+      '@modules': path.resolve(__dirname, 'src/modules'),
+    },
   },
   optimization: optimization(),
   devServer: {                                                      // Локальный сервер. Нужен для обновления изменений в режиме реального времени
     port: 4200,                                                     // Порт для запуска локального сервера
-    hot: isDev                                                      // Горячая перезагрузка
+    hot: isDev,
+    hotOnly: false,
+    liveReload: isDev,
+    watchContentBase: true,
   },
   devtool: isDev ? 'source-map' : '',                               // Создаем исходные карты, чтобы видеть код до компиляции babel'ом
   plugins: plugins(),
@@ -155,43 +146,38 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
-        use: cssLoaders()
+        use: cssLoaders(),
       },
       {
         test: /\.s[ac]ss$/,
-        use: cssLoaders('sass-loader')
+        use: cssLoaders('sass-loader'),
       },
       {
         test: /\.(png|jpg|svg|gif)$/,
-        use: fileLoaders()
+        use: fileLoaders(),
       },
       {
         test: /\.(ttf|woff|woff2|eot)$/,
-        use: ['file-loader']
+        use: ['file-loader'],
       },
       {
         test: /\.xml$/,
-        use: ['xml-loader']
+        use: ['xml-loader'],
       },
       {
         test: /\.csv$/,
-        use: ['csv-loader']
+        use: ['csv-loader'],
       },
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: jsLoader()
+        loader: jsLoader(),
       },
       {
         test: /\.ts$/,
         exclude: /node_modules/,
-        loader: jsLoader('@babel/preset-typescript')
+        loader: jsLoader(),
       },
-      {
-        test: /\.jsx$/,
-        exclude: /node_modules/,
-        loader: jsLoader('@babel/preset-react')
-      }
-    ]
-  }
+    ],
+  },
 };
