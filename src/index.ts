@@ -1,7 +1,7 @@
-import {Text} from './components';
+import { text } from '@components/Text';
 import './index.scss';
 
-console.log(Text);
+console.log(text ? 'a' : 'b');
 
 const promise1 = new Promise((resolve) => {
   setTimeout(() => {
@@ -15,24 +15,23 @@ const promise1 = new Promise((resolve) => {
 
 promise1.then(console.log);
 
+class A {
+  static age = 12;
+  test: string;
 
-// class A {
-//
-//   static age = 12;
-//
-//   constructor(test) {
-//     this.test = test;
-//   }
-//
-//   #test() {
-//     console.log('private')
-//   }
-//
-//   test2() {
-//     this.#test();
-//   }
-// }
-//
-// const a = new A('hello');
-//
-// console.log(a.test, A.age);
+  constructor(test: string) {
+    this.test = test;
+  }
+
+  #test() {
+    console.log('private');
+  }
+
+  test2() {
+    this.#test();
+  }
+}
+
+const n = new A('hello');
+
+console.log(n.test, A.age);

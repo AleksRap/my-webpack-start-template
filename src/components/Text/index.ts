@@ -1,3 +1,1 @@
-const a = 'testa';
-
-export default a;
+export const text = 'testa';

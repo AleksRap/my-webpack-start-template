@@ -7,10 +7,20 @@
         "useBuiltIns": "usage",
         "corejs": 3
       }
-    ]
+    ],
+    "@babel/preset-typescript"
   ],
   "plugins": [
     "@babel/plugin-proposal-class-properties",
-    "@babel/plugin-proposal-private-methods"
+    "@babel/plugin-proposal-private-methods",
+    [
+      "module-resolver",
+      {
+        "root": ["."],
+        "alias": {
+          "@components": "./src/components"
+        }
+      }
+    ]
   ]
 }

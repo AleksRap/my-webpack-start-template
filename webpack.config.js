@@ -9,6 +9,31 @@ const isProd = !isDev;
 
 const filename = (ext) => (isDev ? `[name].${ext}` : `[name].[hash].${ext}`);
 
+const plugins = [
+  new HTMLWebpackPlugin({
+    template: './index.html',
+    minify: {
+      collapseWhitespace: isProd,
+      removeComments: isProd,
+      removeRedundantAttributes: isProd,
+      useShortDoctype: isProd,
+    },
+  }),
+  new CleanWebpackPlugin(),
+  new CopyWebpackPlugin({
+    patterns: [
+      {
+        from: path.resolve(__dirname, 'src/favicon.ico'),
+        to: path.resolve(__dirname, 'dist'),
+      },
+    ],
+  }),
+];
+
+if (isDev) {
+  plugins.push(new webpack.HotModuleReplacementPlugin());
+}
+
 module.exports = {
   mode: 'development',
   context: path.resolve(__dirname, 'src'),
@@ -29,34 +54,17 @@ module.exports = {
     port: 4200,
     compress: isProd,
     open: true,
-    overlay: true,
+    client: {
+      overlay: true,
+    },
     hot: isDev,
-    contentBase: path.resolve(__dirname, 'dist'),
-    watchContentBase: true,
+    static: {
+      directory: path.resolve(__dirname, 'dist'),
+    },
   },
   target: isDev ? 'web' : 'browserslist',
   devtool: false,
-  plugins: [
-    new HTMLWebpackPlugin({
-      template: './index.html',
-      minify: {
-        collapseWhitespace: isProd,
-        removeComments: isProd,
-        removeRedundantAttributes: isProd,
-        useShortDoctype: isProd,
-      },
-    }),
-    new CleanWebpackPlugin(),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: path.resolve(__dirname, 'src/favicon.ico'),
-          to: path.resolve(__dirname, 'dist'),
-        },
-      ],
-    }),
-    new webpack.HotModuleReplacementPlugin(),
-  ],
+  plugins,
   module: {
     rules: [
       {
@@ -76,15 +84,10 @@ module.exports = {
         type: 'asset/resource',
       },
       {
-        test: /\.js$/,
+        test: /\.ts|js$/,
         exclude: /node_modules/,
         use: ['babel-loader'],
       },
-      {
-        test: /\.ts$/,
-        exclude: /node_modules/,
-        use: ['babel-loader', 'ts-loader'],
-      }
-    ]
+    ],
   },
 };
