@@ -1,6 +1,8 @@
 import { text } from '@components/Text';
 import './index.scss';
 
+console.log(process.env.TEST);
+
 console.log(text ? 'a' : 'b');
 
 const promise1 = new Promise((resolve) => {

@@ -28,6 +28,7 @@ const plugins = [
       },
     ],
   }),
+  new webpack.EnvironmentPlugin(['TEST']),
 ];
 
 if (isDev) {
