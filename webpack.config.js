@@ -35,6 +35,15 @@ if (isDev) {
   plugins.push(new webpack.HotModuleReplacementPlugin());
 }
 
+const postCssLoader = {
+  loader: 'postcss-loader',
+  options: {
+    postcssOptions: {
+      plugins: [['autoprefixer']],
+    },
+  },
+};
+
 module.exports = {
   mode: 'development',
   context: path.resolve(__dirname, 'src'),
@@ -70,23 +79,28 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
+        use: ['style-loader', 'css-loader', postCssLoader],
       },
       {
         test: /\.s[ac]ss$/,
         use: [
           'style-loader',
-          'css-loader',
           {
-            loader: 'postcss-loader',
+            loader: 'css-loader',
             options: {
-              postcssOptions: {
-                plugins: [['autoprefixer']],
-              },
+              importLoaders: 1,
+              modules: true,
             },
           },
+          postCssLoader,
           'sass-loader',
         ],
+        include: /\.module\.s[ac]ss$/,
+      },
+      {
+        test: /\.s[ac]ss$/,
+        use: ['style-loader', 'css-loader', postCssLoader, 'sass-loader'],
+        exclude: /\.module\.s[ac]ss$/,
       },
       {
         test: /\.(png|jpg|svg|gif)$/,
